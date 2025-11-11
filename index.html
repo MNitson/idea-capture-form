@@ -1,0 +1,368 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Idea Capture — Knowledge & Idea Management System</title>
+      <style>
+          * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+          }
+
+          body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+  sans-serif;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 20px;
+          }
+
+          .container {
+              background: white;
+              border-radius: 12px;
+              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+              max-width: 600px;
+              width: 100%;
+              padding: 40px;
+          }
+
+          .header {
+              margin-bottom: 30px;
+              text-align: center;
+          }
+
+          .header h1 {
+              font-size: 28px;
+              color: #333;
+              margin-bottom: 8px;
+          }
+
+          .header p {
+              color: #666;
+              font-size: 14px;
+              margin-bottom: 16px;
+          }
+
+          .vault-link-btn {
+              display: inline-block;
+              background: #667eea;
+              color: white;
+              padding: 8px 16px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-size: 13px;
+              font-weight: 600;
+              transition: all 0.3s;
+              border: none;
+              cursor: pointer;
+          }
+
+          .vault-link-btn:hover {
+              background: #764ba2;
+              transform: translateY(-2px);
+          }
+
+          .form-group {
+              margin-bottom: 24px;
+          }
+
+          label {
+              display: block;
+              font-weight: 600;
+              color: #333;
+              margin-bottom: 8px;
+              font-size: 14px;
+          }
+
+          .required {
+              color: #e74c3c;
+          }
+
+          input[type="text"],
+          textarea,
+          select {
+              width: 100%;
+              padding: 12px;
+              border: 2px solid #e0e0e0;
+              border-radius: 6px;
+              font-size: 14px;
+              font-family: inherit;
+              transition: border-color 0.3s;
+          }
+
+          input[type="text"]:focus,
+          textarea:focus,
+          select:focus {
+              outline: none;
+              border-color: #667eea;
+          }
+
+          textarea {
+              min-height: 120px;
+              resize: vertical;
+          }
+
+          .form-row {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+          }
+
+          @media (max-width: 600px) {
+              .form-row {
+                  grid-template-columns: 1fr;
+              }
+          }
+
+          .button-group {
+              display: flex;
+              gap: 12px;
+              margin-top: 30px;
+          }
+
+          button {
+              flex: 1;
+              padding: 12px 24px;
+              border: none;
+              border-radius: 6px;
+              font-size: 14px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s;
+          }
+
+          .submit-btn {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+          }
+
+          .submit-btn:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+          }
+
+          .submit-btn:active {
+              transform: translateY(0);
+          }
+
+          .reset-btn {
+              background: #f0f0f0;
+              color: #333;
+          }
+
+          .reset-btn:hover {
+              background: #e0e0e0;
+          }
+
+          .status-message {
+              margin-top: 20px;
+              padding: 16px;
+              border-radius: 6px;
+              display: none;
+              text-align: center;
+              font-weight: 600;
+          }
+
+          .status-message.success {
+              display: block;
+              background: #d4edda;
+              color: #155724;
+              border: 2px solid #c3e6cb;
+          }
+
+          .status-message.error {
+              display: block;
+              background: #f8d7da;
+              color: #721c24;
+              border: 2px solid #f5c6cb;
+          }
+
+          .status-message.loading {
+              display: block;
+              background: #cfe2ff;
+              color: #084298;
+              border: 2px solid #b6d4fe;
+          }
+
+          .help-text {
+              font-size: 12px;
+              color: #999;
+              margin-top: 6px;
+          }
+
+          .note-box {
+              background: #f9f9f9;
+              border-left: 4px solid #667eea;
+              padding: 12px;
+              margin-bottom: 24px;
+              border-radius: 4px;
+              font-size: 13px;
+              color: #666;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <div class="header">
+              <h1>💡 Capture Idea</h1>
+              <p>Save your idea to Knowledge & Idea Management System</p>
+              <button class="vault-link-btn" onclick="openVault()">📖 Open Obsidian Vault</button>
+          </div>
+
+          <div class="note-box">
+              <strong>✓ Tip:</strong> Your idea will be saved to /inbox/ for review. Add business area and
+  priority during curation.
+          </div>
+
+          <form id="ideaForm">
+              <div class="form-group">
+                  <label for="title">Title <span class="required">*optional (auto-detected if
+  empty)</span></label>
+                  <input type="text" id="title" name="title" placeholder="e.g., New CRM System">
+                  <div class="help-text">If empty, will auto-generate from content</div>
+              </div>
+
+              <div class="form-group">
+                  <label for="content">Idea Content <span class="required">*required</span></label>
+                  <textarea id="content" name="content" placeholder="Describe your idea. What problem does it 
+  solve? Why is it valuable?" required></textarea>
+                  <div class="help-text">Provide enough detail to remember the idea later</div>
+              </div>
+
+              <div class="form-row">
+                  <div class="form-group">
+                      <label for="businessArea">Business Area</label>
+                      <select id="businessArea" name="business-area">
+                          <option value="">— Select or leave blank —</option>
+                          <option value="Telco">Telco Management</option>
+                          <option value="AI Startup">AI Startup</option>
+                          <option value="Crypto Trading">Crypto Trading</option>
+                          <option value="Motorhome">Motorhome</option>
+                          <option value="Personal Development">Personal Development</option>
+                          <option value="Cross-Cutting">Cross-Cutting (Multiple Areas)</option>
+                      </select>
+                      <div class="help-text">You can set this during curation</div>
+                  </div>
+
+                  <div class="form-group">
+                      <label for="priority">Priority</label>
+                      <select id="priority" name="priority">
+                          <option value="">— None (select later) —</option>
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                      </select>
+                      <div class="help-text">Optional priority indicator</div>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                  <label for="source">Source</label>
+                  <select id="source" name="source_type">
+                      <option value="Web Article">Web Article</option>
+                      <option value="Document">Document</option>
+                      <option value="Email Snippet">Email Snippet</option>
+                      <option value="Conversation">Conversation Notes</option>
+                      <option value="Personal">Personal Thought</option>
+                      <option value="Other">Other</option>
+                  </select>
+                  <div class="help-text">Where did this idea come from?</div>
+              </div>
+
+              <div class="button-group">
+                  <button type="submit" class="submit-btn">✓ Capture Idea</button>
+                  <button type="reset" class="reset-btn">Clear</button>
+              </div>
+
+              <div id="statusMessage" class="status-message"></div>
+          </form>
+      </div>
+
+      <script>
+          const form = document.getElementById('ideaForm');
+          const statusMessage = document.getElementById('statusMessage');
+          const webhookUrl = 'https://your-n8n-instance.com/webhook/web-form-capture';
+          // Replace above with your actual n8n webhook URL
+
+          // Function to open Obsidian vault
+          function openVault() {
+              // Opens Obsidian vault folder (/inbox specifically)
+              window.open('obsidian://open?path=/inbox', '_blank');
+
+              // Fallback: If Obsidian URI doesn't work, show instructions
+              setTimeout(() => {
+                  alert('📖 Opening Obsidian vault...\n\nIf it didn\'t open, manually open your Obsidian vault 
+  and navigate to /inbox/ folder');
+              }, 500);
+          }
+
+          form.addEventListener('submit', async function(e) {
+              e.preventDefault();
+
+              // Show loading state
+              statusMessage.textContent = '📝 Capturing idea...';
+              statusMessage.className = 'status-message loading';
+
+              // Gather form data
+              const formData = {
+                  source: 'Web',
+                  title: document.getElementById('title').value.trim(),
+                  content: document.getElementById('content').value.trim(),
+                  'business-area': document.getElementById('businessArea').value || null,
+                  priority: document.getElementById('priority').value || null,
+                  source_type: document.getElementById('source').value,
+                  timestamp: new Date().toISOString()
+              };
+
+              // Validate required fields
+              if (!formData.content) {
+                  statusMessage.textContent = '❌ Error: Idea content is required';
+                  statusMessage.className = 'status-message error';
+                  return;
+              }
+
+              try {
+                  // Send to n8n webhook
+                  const response = await fetch(webhookUrl, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(formData)
+                  });
+
+                  if (response.ok) {
+                      // Success
+                      statusMessage.innerHTML = '✓ Idea captured!<br>Open Obsidian to review it in /inbox/';
+                      statusMessage.className = 'status-message success';
+                      form.reset();
+
+                      // Clear message after 5 seconds
+                      setTimeout(() => {
+                          statusMessage.className = 'status-message';
+                          statusMessage.textContent = '';
+                      }, 5000);
+                  } else {
+                      const error = await response.json();
+                      statusMessage.textContent = `❌ Capture failed: ${error.error || 'Unknown error'}`;
+                      statusMessage.className = 'status-message error';
+                  }
+              } catch (error) {
+                  statusMessage.textContent = `❌ Error: ${error.message}. Check that n8n is running.`;
+                  statusMessage.className = 'status-message error';
+                  console.error('Error:', error);
+              }
+          });
+
+          // Auto-focus content field on load
+          window.addEventListener('load', function() {
+              document.getElementById('content').focus();
+          });
+      </script>
+  </body>
+  </html>
